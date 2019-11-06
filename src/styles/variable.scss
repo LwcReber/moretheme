@@ -1,0 +1,25 @@
+@import './theme_a.scss';
+@import './theme_b.scss';
+
+// 定义全局变量表，（注意）需要在body上添加对应的key值，比如添加theme-a的class，实际是通过切换body的class，达到换肤效果
+$themeGlobal: (
+  theme-a: $themea,
+  theme-b: $themeb
+);
+
+// 使用mixin
+@mixin themefly {
+  // 遍历变量表，拿到属性名，以及对应打主题色对象属性名（在后面使用function时，通过该对象查找对应打颜色值）
+  @each $themename, $thememap in $themeGlobal {
+    // 把主题色对象设置为全局变量
+    $themeMaps: $thememap !global;
+    // 使用 & 父元素选择器，使得mixin的内容都抽离出一份单独的多层class主题样式
+    .#{$themename} & {
+      @content
+    }
+  }
+};
+// 使用function 在使用mixin时传入对应的主题色变量名，通过$themeMaps查表找到对应的颜色值
+@function theme($key) {
+  @return map-get($themeMaps, $key)
+}
